@@ -17,6 +17,20 @@ struct Params<'a> {
     titles: &'a str,
 }
 
+impl<'a> Params<'a> {
+    fn new(titles: &'a str) -> Self {
+        Self {
+            format: "json",
+            action: "query",
+            prop: "extracts",
+            exintro: true,
+            explaintext: true,
+            redirects: "1",
+            titles,
+        }
+    }
+}
+
 #[derive(Deserialize)]
 struct PageValue {
     extract: String,
@@ -35,15 +49,7 @@ struct Response {
 async fn search<'a>(lang: &'a str, text: &'a str) -> surf::Result<()> {
     let url = Url::parse(&format!("https://{}.wikipedia.org/w/api.php", lang))?;
 
-    let params = Params {
-        format: "json",
-        action: "query",
-        prop: "extracts",
-        exintro: true,
-        explaintext: true,
-        redirects: "1",
-        titles: &text,
-    };
+    let params = Params::new(text);
 
     let res = if let Ok(res) = surf::get(url).query(&params)?.recv_string().await {
         res
