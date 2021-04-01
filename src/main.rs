@@ -17,23 +17,22 @@ struct Params<'a> {
     titles: &'a str,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize)]
 struct PageValue {
-    title: String,
     extract: String,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize)]
 struct Query {
     pages: HashMap<String, PageValue>,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize)]
 struct Response {
     query: Query,
 }
 
-async fn search(lang: String, text: String) -> surf::Result<()> {
+async fn search<'a>(lang: &'a str, text: &'a str) -> surf::Result<()> {
     let url = Url::parse(&format!("https://{}.wikipedia.org/w/api.php", lang))?;
 
     let params = Params {
@@ -86,7 +85,7 @@ fn action(c: &Context) {
             },
         };
 
-        search(lang, text.to_owned()).await.unwrap();
+        search(&lang, &text).await.unwrap();
     });
 }
 
