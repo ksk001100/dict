@@ -76,11 +76,11 @@ async fn search<'a>(lang: &'a str, text: &'a str) -> surf::Result<()> {
 
 fn action(c: &Context) {
     task::block_on(async {
-        let text = if let Some(text) = c.args.get(0) {
-            text
-        } else {
+        let text = if c.args.is_empty() {
             c.help();
             exit(1);
+        } else {
+            c.args.join(" ")
         };
 
         let lang = match c.string_flag("lang") {
